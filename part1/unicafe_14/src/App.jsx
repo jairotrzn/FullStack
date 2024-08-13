@@ -11,23 +11,50 @@ const App = () => {
     'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.'
-  ]
+  ];
 
-  const [selected,setSelected] = useState(0)
+  const [selected, setSelected] = useState(0);
+  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
 
   const nextAnecdote = () => {
-    if(selected +1 >= anecdotes.length){
-      setSelected(0)
-    } else {
-      setSelected(selected + 1)
-    }
-  }
-  return(
+    setSelected((selected + 1) % anecdotes.length);
+  };
+
+  const voteAnecdote = () => {
+    const copy = [...votes];
+    copy[selected] += 1;
+    setVotes(copy);
+  };
+
+  const mostVotedAnecdote = () => {
+    const maxVotes = Math.max(...votes);
+    const mostVotedIndex = votes.indexOf(maxVotes);
+    return {
+      text: anecdotes[mostVotedIndex],
+      votes: maxVotes,
+    };
+  };
+
+  const mostVoted = mostVotedAnecdote();
+
+  return (
     <div>
-      <Anecdotes text={anecdotes[selected]}></Anecdotes>
-      <Buttom onClick={nextAnecdote} text="Siguiente anecdota" ></Buttom>
+      <Anecdotes text={anecdotes[selected]} />
+      <h3>Votos de la anécdota: {votes[selected]}</h3>
+      <Buttom onClick={nextAnecdote} text="Siguiente anécdota" />
+      <Buttom onClick={voteAnecdote} text="Votar" />
+
+      <h2>Anecdota con más votos</h2>
+      {mostVoted.votes > 0 ? (
+        <div>
+          <p>{mostVoted.text}</p>
+          <p>Tiene {mostVoted.votes} votos</p>
+        </div>
+      ) : (
+        <p>Aún no hay votos.</p>
+      )}
     </div>
-  )
-}
+  );
+};
 
 export default App;
